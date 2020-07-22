@@ -309,6 +309,8 @@ INIT += enable_swap.sh
 INIT += init.mdm.sh
 INIT += fstab.qcom
 INIT += fstab.qti
+INIT += fstab.default
+INIT += fstab.emmc
 INIT += init.qcom.sensors.sh
 INIT += init.qcom.crashdata.sh
 INIT += init.qcom.vendor.rc
@@ -819,6 +821,17 @@ else
     DELAUN := Launcher3
 endif
 
+#servicetracker HAL
+PRODUCT_PACKAGES += \
+    vendor.qti.hardware.servicetracker@1.2-impl \
+    vendor.qti.hardware.servicetracker@1.2-service
+
+#debugApp FDA
+PRODUCT_PACKAGES += FDA
+PRODUCT_PACKAGES += debug.script.rc
+PRODUCT_PACKAGES += init.debug.script.sh
+PRODUCT_PACKAGES += init.myam.sh
+
 PRODUCT_PACKAGES += $(ALSA_HARDWARE)
 PRODUCT_PACKAGES += $(ALSA_UCM)
 PRODUCT_PACKAGES += $(ANGLE)
@@ -1066,11 +1079,14 @@ PRODUCT_PACKAGES_DEBUG += \
     init.qti.debug-kona.sh \
     init.qti.debug-lito.sh \
     init.qti.debug-atoll.sh \
-    init.qti.debug-trinket.sh
+    init.qti.debug-trinket.sh \
+    init.qti.debug-bengal.sh
 
 PRODUCT_PACKAGES += liboemaids_system
 PRODUCT_PACKAGES += liboemaids_vendor
-PRODUCT_PACKAGES += android.hardware.health@2.0-service
+PRODUCT_PACKAGES += android.hardware.health@2.1-service
+PRODUCT_PACKAGES += android.hardware.health@2.1-impl
+PRODUCT_PACKAGES += android.hardware.health@2.1-impl.recovery
 # framework detect libs
 PRODUCT_PACKAGES += libvndfwk_detect_jni.qti
 PRODUCT_PACKAGES += libqti_vndfwk_detect
