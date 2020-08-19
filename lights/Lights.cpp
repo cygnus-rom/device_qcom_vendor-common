@@ -56,34 +56,32 @@ light_device_t* getLightDevice(const char* name) {
 }
 
 Lights::Lights() {
-    std::map<int, light_device_t*> lights;
+    std::map<LightType, light_device_t*> lights;
     std::vector<HwLight> availableLights;
-    int lightCount =0;
     for(auto const &pair : kLogicalLights) {
         LightType type = pair.first;
         const char* name = pair.second;
         light_device_t* lightDevice = getLightDevice(name);
-        lightCount++;
         if (lightDevice != nullptr) {
-            HwLight hwLight{};
-            hwLight.id = (int)type;
-            hwLight.type = type;
-            hwLight.ordinal = 0;
-            lights[hwLight.id] = lightDevice;
-            availableLights.emplace_back(hwLight);
+            lights[type] = lightDevice;
         }
+        HwLight hwLight{};
+        hwLight.id = availableLights.size();
+        hwLight.type = type;
+        hwLight.ordinal = 0;
+        availableLights.emplace_back(hwLight);
     }
     mAvailableLights = availableLights;
     mLights = lights;
-    maxLights = lightCount;
 }
 
 ndk::ScopedAStatus Lights::setLightState(int id, const HwLightState& state) {
-    if (id >= maxLights) {
+    if (id >= mAvailableLights.size()) {
         ALOGE("Invalid Light id : %d", id);
-        return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+        return ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_ARGUMENT);
     }
-    auto it = mLights.find(id);
+    HwLight const& light = mAvailableLights[id];
+    auto it = mLights.find(light.type);
     if (it == mLights.end()) {
         ALOGE("Light not supported");
         return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
